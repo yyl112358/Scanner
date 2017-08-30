@@ -95,11 +95,11 @@ namespace Scanner
         {
             if (pg_ScannerPg.InvokeRequired)
             {
-                pg_ScannerPg.Invoke(new Action<int>((t)=> { pg_ScannerPg.Value = (int)(((pg/65535.0)*100)); }), pg);
+                pg_ScannerPg.Invoke(new Action<int>((t)=> { pg_ScannerPg.Value = (int)(((pg/(m_EndPort-m_StartPort * 1.0))*100)); }), pg);
             }
             else
             {
-                pg_ScannerPg.Value = (int)(((pg / 65535.0) * 100));
+                pg_ScannerPg.Value = (int)(((pg / (m_EndPort - m_StartPort * 1.0) ) * 100));
             }
             if (lbl_ScannerPort.InvokeRequired)
             {
@@ -111,11 +111,11 @@ namespace Scanner
             }
             if (lbl_SannerPercent.InvokeRequired)
             {
-                lbl_SannerPercent.Invoke(new Action<int>((t) => { lbl_SannerPercent.Text = ((t / 65535.0)*100).ToString("F2") + "%"; }), pg);
+                lbl_SannerPercent.Invoke(new Action<int>((t) => { lbl_SannerPercent.Text = ((t / (m_EndPort - m_StartPort * 1.0) ) *100).ToString("F2") + "%"; }), pg);
             }
             else
             {
-                lbl_SannerPercent.Text = ((pg / 65535.0)*100).ToString("F2") + "%";
+                lbl_SannerPercent.Text = ((pg / (m_EndPort - m_StartPort * 1.0)) *100).ToString("F2") + "%";
             }
         }
         /// <summary>
@@ -144,10 +144,12 @@ namespace Scanner
                         if (t.Name == "txt_portFrom")
                         {
                             scanner.StartPort = outer;
+                            m_StartPort = outer;
                         }
                         else
                         {
                             scanner.EndPort = outer;
+                            m_EndPort = outer;
                         }
                     }
                     else

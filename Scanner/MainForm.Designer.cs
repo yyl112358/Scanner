@@ -180,6 +180,7 @@
             this.txt_portFrom.Name = "txt_portFrom";
             this.txt_portFrom.Size = new System.Drawing.Size(53, 21);
             this.txt_portFrom.TabIndex = 14;
+            this.txt_portFrom.Text = "1";
             this.txt_portFrom.TextChanged += OnValidatePortInput;
             // 
             // lbl_Spliter
@@ -197,6 +198,7 @@
             this.txt_portEnd.Name = "txt_portEnd";
             this.txt_portEnd.Size = new System.Drawing.Size(53, 21);
             this.txt_portEnd.TabIndex = 16;
+            this.txt_portEnd.Text = "65535";
             this.txt_portEnd.TextChanged += OnValidatePortInput;
             // 
             // MainForm
