@@ -17,7 +17,6 @@ namespace Scanner.Model
 
         public string Message { get; set; }
 
-        public Socket Socket { get; set; }
         #endregion
 
         #region Constructor

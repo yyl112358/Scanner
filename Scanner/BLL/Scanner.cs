@@ -128,6 +128,7 @@ namespace Scanner.BLL
         {
             List<PortInfo> result = new List<PortInfo>();
             IPEndPoint endPoint;
+            /*此处需要优化不然 启动的太慢 2017-08-30*/
             for (int i = StartPort; i < EndPort; i++)
             {
                 endPoint = new IPEndPoint(address, i);
@@ -194,12 +195,19 @@ namespace Scanner.BLL
             {
                 result = false;
             }
+            finally
+            {
+                if (tcpSock.Connected)
+                {
+                    tcpSock.Close();
+                }
+                tcpSock.Dispose();
+            }
             if (result)
             {
                 lock (ResultLock)
                 {
                     PortInfo info = new PortInfo(endPoint.Port);
-                    info.Socket = tcpSock;
                     ResultList.Add(info);
                     if (OnScanedCanConnect.Target != null)
                     {

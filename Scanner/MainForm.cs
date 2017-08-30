@@ -19,8 +19,8 @@ namespace Scanner
         #region Filed
         List<Control> m_controls = new List<Control>();
         Scanner.BLL.Scanner scanner = new Scanner.BLL.Scanner();
-        int m_StartPort = 0;
-        int m_EndPort = 0;
+        int m_StartPort = 1;
+        int m_EndPort = 65535;
         #endregion
 
         public MainForm()
