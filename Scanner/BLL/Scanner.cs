@@ -44,6 +44,8 @@ namespace Scanner.BLL
         private int m_StartPort = 1;
 
         private int m_EndPort = 65535;
+
+        private string m_Ipaddress = string.Empty;
         #endregion
 
         #region Property
@@ -57,7 +59,7 @@ namespace Scanner.BLL
         public int StartPort
         {
             get { return m_StartPort; }
-            set { if (value > m_EndPort) { throw new Exception("起始端口大于终点端口"); } else if (value<1) { throw new Exception("端口值不能小于1"); }else { m_StartPort = value; } }
+            set { if (value > m_EndPort) { throw new Exception("起始端口大于终点端口"); } else if (value < 1) { throw new Exception("端口值不能小于1"); } else { m_StartPort = value; } }
         }
         /// <summary>
         /// 扫描的终止端口
@@ -67,12 +69,22 @@ namespace Scanner.BLL
             get { return m_EndPort; }
             set { if (value < m_StartPort) { throw new Exception("终止结点小于起始结点"); } else if (value > 65535) { throw new Exception("端口值 大于65535"); } else { m_EndPort = value; } }
         }
+
+        public string Ipaddress
+        {
+            get
+            {
+                return m_Ipaddress;
+            }
+        }
         #endregion
         /// <summary>
         /// 外部调用开始扫描函数
         /// </summary>
         public void Scanning()
         {
+            Set.Clear();
+            ResultList.Clear();
             List<PortInfo> result = new List<PortInfo>();
             if (string.IsNullOrEmpty(m_Domain))
             {
@@ -80,16 +92,22 @@ namespace Scanner.BLL
             }
             IPAddress ipAdd;
             bool ParseResult = IPAddress.TryParse(m_Domain, out ipAdd);
-            address = ipAdd;
+
             if (!ParseResult)
             {
                 IPAddress[] addressList = Dns.GetHostAddresses(m_Domain);
                 if (addressList.Count() > 0)
                 {
                     address = addressList[0];
+                    m_Ipaddress = address.ToString();
                 }
                 else
                 { throw new Exception("输入的域名或IP错误"); }
+            }
+            else
+            {
+                address = ipAdd;
+                m_Ipaddress = address.ToString();
             }
             Func<List<PortInfo>> func = new Func<List<PortInfo>>(ScanAction);
             func.BeginInvoke(new AsyncCallback((t) =>

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\SendDate.cs" />
     <Compile Include="Model\PortInfo.cs" />
     <Compile Include="BLL\Scanner.cs" />
     <Compile Include="BLL\WorkStatusAttribute.cs" />
