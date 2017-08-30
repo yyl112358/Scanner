@@ -89,7 +89,8 @@
             this.lbl_ScannerPort.Name = "lbl_ScannerPort";
             this.lbl_ScannerPort.Size = new System.Drawing.Size(17, 20);
             this.lbl_ScannerPort.TabIndex = 4;
-            this.lbl_ScannerPort.Text = "0";
+            this.lbl_ScannerPort.Text = "1";
+            
             // 
             // list_CanUsePortList
             // 
@@ -137,6 +138,7 @@
             this.btn_Send.TabIndex = 9;
             this.btn_Send.Text = "发送";
             this.btn_Send.UseVisualStyleBackColor = true;
+            this.btn_Send.Click += new System.EventHandler(this.btn_Send_Click);
             // 
             // txt_UseEncoding
             // 
@@ -172,6 +174,7 @@
             this.txt_portFrom.Size = new System.Drawing.Size(53, 21);
             this.txt_portFrom.TabIndex = 14;
             this.txt_portFrom.Text = "1";
+            this.txt_portFrom.LostFocus += OnValidatePortInput;
             // 
             // lbl_Spliter
             // 
@@ -189,6 +192,7 @@
             this.txt_portEnd.Size = new System.Drawing.Size(53, 21);
             this.txt_portEnd.TabIndex = 16;
             this.txt_portEnd.Text = "65535";
+            this.txt_portEnd.LostFocus += OnValidatePortInput;
             // 
             // btn_ReScan
             // 
@@ -200,6 +204,7 @@
             this.btn_ReScan.TabIndex = 17;
             this.btn_ReScan.Text = "ReScan";
             this.btn_ReScan.UseVisualStyleBackColor = false;
+            this.btn_ReScan.Click += new System.EventHandler(this.btn_ReScan_Click);
             // 
             // MainForm
             // 

@@ -11,12 +11,13 @@ using System.Windows.Forms;
 using Scanner.Model;
 using Scanner.BLL;
 
+
 namespace Scanner
 {
     public partial class MainForm : Form
     {
         #region Filed
-        List<Control> m_controls= new List<Control>();
+        List<Control> m_controls = new List<Control>();
         Scanner.BLL.Scanner scanner = new Scanner.BLL.Scanner();
         int m_StartPort = 0;
         int m_EndPort = 0;
@@ -26,41 +27,7 @@ namespace Scanner
         {
             Init();
         }
-        /// <summary>
-        /// 初始化方法
-        /// </summary>
-        public void Init()
-        {
-            InitializeComponent();
-            foreach (Control c in this.Controls)
-            {
-                m_controls.Add(c);
-            }
-            SetUIStatus(WorkStatus.Init);
-        }
-        /// <summary>
-        /// 将UI的可交互性设置为指定的程序状态下的状态
-        /// </summary>
-        /// <param name="status">当前程序所处的状态</param>
-        private void SetUIStatus(WorkStatus status)
-        {
-            Type type = status.GetType();
-            FieldInfo filed = type.GetField(status.ToString());
-            if (filed != null)
-            {
-                object[] bindedAttribute =  filed.GetCustomAttributes(typeof(WorkStatusAttribute), true);
-                foreach (var attr in bindedAttribute)
-                {
-                    WorkStatusAttribute w = attr as WorkStatusAttribute;
-                    if (w != null)
-                    {
-                        w.Controls = m_controls;
-                        w.SetStatusUI();
-                    }
-                }
-            }
-        }
-
+        //开始扫描
         private void btn_StartScan_Click(object sender, EventArgs e)
         {
             string domain = txtBox_ScannerInput.Text;
@@ -70,7 +37,8 @@ namespace Scanner
                 scanner.Domain = domain;
                 scanner.OnScanProgress += OnScanProgress;
                 scanner.OnScanPortComplete += OnScanPortComplete;
-                scanner.OnScanedCanConnect += (portInfo) => {
+                scanner.OnScanedCanConnect += (portInfo) =>
+                {
                     if (list_CanUsePortList.InvokeRequired)
                     {
                         list_CanUsePortList.Invoke(new Action<PortInfo>((port) => { list_CanUsePortList.Items.Add(port); }), portInfo);
@@ -87,19 +55,16 @@ namespace Scanner
                 MessageBox.Show("请输入要扫描的domain");
             }
         }
-        /// <summary>
-        /// 逻辑层扫描事件
-        /// </summary>
-        /// <param name="pg">端口进度</param>
+        //逻辑层扫描事件处理器
         private void OnScanProgress(int pg)
         {
             if (pg_ScannerPg.InvokeRequired)
             {
-                pg_ScannerPg.Invoke(new Action<int>((t)=> { pg_ScannerPg.Value = (int)(((pg/(m_EndPort-m_StartPort * 1.0))*100)); }), pg);
+                pg_ScannerPg.Invoke(new Action<int>((t) => { pg_ScannerPg.Value = (int)(((pg / (m_EndPort - m_StartPort * 1.0)) * 100)); }), pg);
             }
             else
             {
-                pg_ScannerPg.Value = (int)(((pg / (m_EndPort - m_StartPort * 1.0) ) * 100));
+                pg_ScannerPg.Value = (int)(((pg / (m_EndPort - m_StartPort * 1.0)) * 100));
             }
             if (lbl_ScannerPort.InvokeRequired)
             {
@@ -111,25 +76,19 @@ namespace Scanner
             }
             if (lbl_SannerPercent.InvokeRequired)
             {
-                lbl_SannerPercent.Invoke(new Action<int>((t) => { lbl_SannerPercent.Text = ((t / (m_EndPort - m_StartPort * 1.0) ) *100).ToString("F2") + "%"; }), pg);
+                lbl_SannerPercent.Invoke(new Action<int>((t) => { lbl_SannerPercent.Text = ((t / (m_EndPort - m_StartPort * 1.0)) * 100).ToString("F2") + "%"; }), pg);
             }
             else
             {
-                lbl_SannerPercent.Text = ((pg / (m_EndPort - m_StartPort * 1.0)) *100).ToString("F2") + "%";
+                lbl_SannerPercent.Text = ((pg / (m_EndPort - m_StartPort * 1.0)) * 100).ToString("F2") + "%";
             }
         }
-        /// <summary>
-        /// 逻辑层扫描完成事件
-        /// </summary>
-        /// <param name="info">可用端口集合</param>
+        // 逻辑层扫描完成事件处理器
         private void OnScanPortComplete(List<PortInfo> info)
         {
             SetUIStatus(WorkStatus.ScanComplete);
         }
-
-        /// <summary>
-        /// 验证输入的端口数据
-        /// </summary>
+        // 验证输入的端口数据事件处理器
         private void OnValidatePortInput(object sender, EventArgs e)
         {
             TextBox t = sender as TextBox;
@@ -160,8 +119,31 @@ namespace Scanner
                 catch (Exception exp)
                 {
                     MessageBox.Show(exp.Message);
-                }               
+                }
             }
+        }
+        //发送数据按钮 
+        private void btn_Send_Click(object sender, EventArgs e)
+        {
+            if (list_CanUsePortList.SelectedItem != null)
+            {
+            }
+            else
+            {
+                MessageBox.Show("请先选择要发送的端口号");
+            }
+        }
+        //重新扫描按钮
+        private void btn_ReScan_Click(object sender, EventArgs e)
+        {
+            list_CanUsePortList.Items.Clear();
+            txtBox_ScannerInput.Text = string.Empty;
+            txt_portFrom.Text = "1";
+            txt_portEnd.Text = "65535";
+            pg_ScannerPg.Value = 0;
+            lbl_ScannerPort.Text = string.Empty;
+            lbl_SannerPercent.Text = "%";
+            SetUIStatus(WorkStatus.Init);
         }
     }
 }
