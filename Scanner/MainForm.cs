@@ -35,19 +35,7 @@ namespace Scanner
             {
                 SetUIStatus(WorkStatus.Scan);
                 scanner.Domain = domain;
-                scanner.OnScanProgress += OnScanProgress;
-                scanner.OnScanPortComplete += OnScanPortComplete;
-                scanner.OnScanedCanConnect += (portInfo) =>
-                {
-                    if (list_CanUsePortList.InvokeRequired)
-                    {
-                        list_CanUsePortList.Invoke(new Action<PortInfo>((port) => { list_CanUsePortList.Items.Add(port); }), portInfo);
-                    }
-                    else
-                    {
-                        list_CanUsePortList.Items.Add(portInfo);
-                    }
-                };
+                
                 scanner.Scanning();
             }
             else

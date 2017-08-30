@@ -22,6 +22,19 @@ namespace Scanner
             {
                 m_controls.Add(c);
             }
+            scanner.OnScanProgress += OnScanProgress;
+            scanner.OnScanPortComplete += OnScanPortComplete;
+            scanner.OnScanedCanConnect += (portInfo) =>
+            {
+                if (list_CanUsePortList.InvokeRequired)
+                {
+                    list_CanUsePortList.Invoke(new Action<PortInfo>((port) => { list_CanUsePortList.Items.Add(port); }), portInfo);
+                }
+                else
+                {
+                    list_CanUsePortList.Items.Add(portInfo);
+                }
+            };
             SetUIStatus(WorkStatus.Init);
         }
         /// <summary>
