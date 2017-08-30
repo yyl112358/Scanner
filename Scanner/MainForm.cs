@@ -15,8 +15,13 @@ namespace Scanner
 {
     public partial class MainForm : Form
     {
+        #region Filed
         List<Control> m_controls= new List<Control>();
         Scanner.BLL.Scanner scanner = new Scanner.BLL.Scanner();
+        int m_StartPort = 0;
+        int m_EndPort = 0;
+        #endregion
+
         public MainForm()
         {
             Init();
@@ -120,6 +125,41 @@ namespace Scanner
         private void OnScanPortComplete(List<PortInfo> info)
         {
             SetUIStatus(WorkStatus.ScanComplete);
+        }
+
+        /// <summary>
+        /// 验证输入的端口数据
+        /// </summary>
+        private void OnValidatePortInput(object sender, EventArgs e)
+        {
+            TextBox t = sender as TextBox;
+            if (t != null)
+            {
+                try
+                {
+                    int outer = 0;
+                    bool parseResult = int.TryParse(t.Text, out outer);
+                    if (parseResult)
+                    {
+                        if (t.Name == "txt_portFrom")
+                        {
+                            scanner.StartPort = outer;
+                        }
+                        else
+                        {
+                            scanner.EndPort = outer;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("输入的端口非法");
+                    }
+                }
+                catch (Exception exp)
+                {
+                    MessageBox.Show(exp.Message);
+                }               
+            }
         }
     }
 }
