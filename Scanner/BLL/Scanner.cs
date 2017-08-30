@@ -65,7 +65,7 @@ namespace Scanner.BLL
         public int EndPort
         {
             get { return m_EndPort; }
-            set { if (value < m_StartPort) { throw new Exception("终止结点小于起始结点"); } else if (value > 65535) { throw new Exception("端口值 大于65535"); } else { m_EndPort= value} }
+            set { if (value < m_StartPort) { throw new Exception("终止结点小于起始结点"); } else if (value > 65535) { throw new Exception("端口值 大于65535"); } else { m_EndPort = value; } }
         }
         #endregion
         /// <summary>
