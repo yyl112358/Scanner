@@ -110,7 +110,7 @@ namespace Scanner.BLL
         {
             List<PortInfo> result = new List<PortInfo>();
             IPEndPoint endPoint;
-            for (int i = 1; i < 65535; i++)
+            for (int i = StartPort; i < EndPort; i++)
             {
                 endPoint = new IPEndPoint(address, i);
                 //对每个端口进行异步不然太慢了
@@ -134,8 +134,8 @@ namespace Scanner.BLL
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 lock (Lock)
                 {
-                    int i = 1;
-                    for (; i < 65535; i++)
+                    int i = StartPort;
+                    for (; i < EndPort; i++)
                     {
                         if (Set.Contains(i))
                         {
@@ -146,7 +146,7 @@ namespace Scanner.BLL
                             break;
                         }
                     }
-                    if (i == 65535)
+                    if (i == EndPort)
                     {
                         break;
                     }

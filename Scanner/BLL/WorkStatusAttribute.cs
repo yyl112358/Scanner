@@ -41,7 +41,14 @@ namespace Scanner.BLL
         {
             foreach (Control c in enableList)
             {
-                c.Enabled = true;
+                if (c.InvokeRequired)
+                {
+                    c.Invoke(new Action<bool>((t) => { c.Enabled = t; }), true);
+                }
+                else
+                {
+                    c.Enabled = true;
+                }
             }
         }
         /// <summary>
@@ -52,7 +59,14 @@ namespace Scanner.BLL
         {
             foreach (Control c in disenabledList)
             {
-                c.Enabled = false;
+                if (c.InvokeRequired)
+                {
+                    c.Invoke(new Action<bool>((t) => { c.Enabled = t; }), false);
+                }
+                else
+                {
+                    c.Enabled = false;
+                }
             }
         }
         /// <summary>
