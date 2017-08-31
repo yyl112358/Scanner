@@ -1,3 +1,5 @@
 .vs/
 Scanner/bin/
 Scanner/obj/
+Scanner.Test/bin
+Scanner.Test/obj

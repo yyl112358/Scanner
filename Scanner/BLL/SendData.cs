@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Threading;
+using System.IO;
 using System.Net.Sockets;
 
 namespace Scanner.BLL
@@ -27,6 +29,8 @@ namespace Scanner.BLL
         object TimeOutLock = new object();
 
         bool IsTransferNow = false;
+
+        event Action<object> OnReciveComplete;
         #endregion
 
         #region  Property
@@ -77,7 +81,7 @@ namespace Scanner.BLL
             }
         }
         /// <summary>
-        /// 设置或获取获取结果时的超时时间
+        /// 设置或获取获取结果时的超时时间(PS：单位S)
         /// </summary>
         public int TimeOut
         {
@@ -96,22 +100,38 @@ namespace Scanner.BLL
         }
         #endregion
 
+        #region Method
         /// <summary>
         /// 向远端端口发送数据并获取返回的数据
         /// </summary>
         /// <param name="data">要发送的数据</param>
-        /// <exception cref="Exception">上一个请求还没有完成</exception>
+        /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
         /// <returns>返回的字节流</returns>
         public byte[] GetResult(string data)
         {
             byte[] result = null;
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                throw new Exception("请传入正确的要发送的字符信息");
+            }
+            System.Text.Encoding encoding = System.Text.Encoding.GetEncoding(this.m_Encoding);
+            byte[] sendData = encoding.GetBytes(data);
+            if (sendData != null && sendData.Length > 0)
+            {
+                result = GetResult(sendData);
+            }
+            else
+            {
+                throw new Exception("编码发生错误");
+            }
+            
             return result;
         }
         /// <summary>
         /// 向远端端口发送数据并获取返回的数据
         /// </summary>
         /// <param name="date">要发送的数据</param>
-        /// <exception cref="Exception">上一个请求还没有完成</exception>
+        /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
         /// <returns>返回的字节流</returns>
         public byte[] GetResult(byte[] data)
         {
@@ -128,38 +148,92 @@ namespace Scanner.BLL
                 IPEndPoint endPoint = new IPEndPoint(address, m_Port);
                 socket.Connect(endPoint);
                 int sendLength = socket.Send(data);
-                Func<Socket, byte[], int> del = null;
+                Func<Socket, byte[]> del = null;
                 if (sendLength == data.Length)
                 {
-                    del = new Func<Socket, byte[], int>((sock, resultByte) =>
+                    del = new Func<Socket,byte[]>((sock) =>
                     {
-                        int r = 0;
-                        byte[] buff = new byte[512];
-                        //持续接收
+                        byte[] resultByte = null;
+                        SockAndResult Info = new SockAndResult() { sock = sock, Result =null };
+                        #region 另起线程进行接收动作
+                        Thread reciveThread = new Thread((o) =>
+                        {
+                            SockAndResult param = o as SockAndResult;
+                            Socket s;
+                            if (o == null)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                s = param.sock;
+                            }
+
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                do
+                                {
+                                    byte[] buff = new byte[512];
+                                    int reciveLength = 0;
+                                    reciveLength = s.Receive(buff, 0, 512, SocketFlags.None);
+                                    if (reciveLength > 0)
+                                    {
+                                        ms.Write(buff, 0, reciveLength);
+                                    }
+                                    if (reciveLength == 0)
+                                    {
+                                        break;
+                                    }
+                                    buff = new byte[512];
+                                }
+                                //持续接收
+                                while (s.Available > 0);
+                                byte[] reciveResult = new byte[ms.Length];
+                                ms.Seek(0, SeekOrigin.Begin);
+                                ms.Read(reciveResult, 0, (int)ms.Length);
+                                param.Result = reciveResult;
+                            }
+                            if (socket.Connected)
+                            {
+                                socket.Shutdown(SocketShutdown.Both);
+                                socket.Close();
+                                socket.Dispose();
+                            }
+                        });
+                        reciveThread.IsBackground = true;
+                        reciveThread.Start(Info);
+                        #endregion
+
+                        TimeSpan ts = TimeSpan.FromSeconds(this.TimeOut);
+                        DateTime WaitTimeTo = DateTime.Now.Add(ts);
+                        //当前线程监视运行时间
                         while (true)
                         {
-                            int reciveLength = socket.Receive(buff, 0, 512, SocketFlags.None);
-                            //缓冲区接满
-                            if (reciveLength <= 512)
+                            Thread.Sleep(TimeSpan.FromSeconds(1));
+                            if (reciveThread.ThreadState == ThreadState.Stopped)
                             {
-
+                                resultByte = Info.Result;
+                                break;
                             }
-                            using ()
+                            //超时
+                            else if (WaitTimeTo.CompareTo(DateTime.Now) < 0)
+                            {
+                                reciveThread.Abort();
+                                throw new Exception("接收超时");
+                            }
                         }
-                        return r;
+                        return resultByte;
                     });
-                    //异步以使用TimeOut，回调报告已接收完成
-                    del.BeginInvoke(socket, result, new AsyncCallback((isyncresult) =>
+                    byte[] invorkResult =del.Invoke(socket);
+                    result = invorkResult;
+                    if (OnReciveComplete != null)
                     {
-                       
-                    }), this);
+                        OnReciveComplete(invorkResult);
+                    }
                 }
                 else
                 {
                     throw new Exception("发送数据失败");
-                }
-                while (true)
-                {
                 }
             }
             catch (Exception e)
@@ -174,9 +248,15 @@ namespace Scanner.BLL
         /// <param name="callBack">回调</param>
         /// <param name="date">要发送的数据</param>
         /// <param name="result">结果</param>
-        /// <exception cref="Exception">上一个请求还没有完成</exception>
-        public void AsyncGetResult(AsyncCallback callBack, string data, byte[] result)
+        /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
+        public void AsyncGetResult(Action<object> callBack, string data,out byte[] result)
         {
+            if (this.OnReciveComplete != null)
+            {
+                OnReciveComplete = null;
+            }
+            OnReciveComplete += callBack;
+            result = GetResult(data);
         }
         /// <summary>
         /// 以异步调用的方式获取远程端口的返回值
@@ -184,10 +264,15 @@ namespace Scanner.BLL
         /// <param name="callBack">回调</param>
         /// <param name="date">要发送的数据</param>
         /// <param name="result">结果</param>
-        /// <exception cref="Exception">上一个请求还没有完成</exception>
-        public void AsyncGetResult(AsyncCallback callBack, byte[] data, byte[] result)
+        /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
+        public void AsyncGetResult(Action<object> callBack, byte[] data,out byte[] result)
         {
-
+            if (this.OnReciveComplete != null)
+            {
+                OnReciveComplete = null;
+            }
+            OnReciveComplete += callBack;
+            result = GetResult(data);
         }
 
         /// <summary>
@@ -201,7 +286,27 @@ namespace Scanner.BLL
                 {
                     throw new Exception("上一个请求还没有完成");
                 }
+                IsTransferNow = true;
             }
+        }
+
+        private void ReleaseLock()
+        {
+            lock (Lock)
+            {
+                IsTransferNow = false;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// 封装内部包含以连接远程终结点的Socket返回字节数组的类
+        /// </summary>
+        class SockAndResult
+        {
+            public Socket sock { get; set; }
+
+            public byte[] Result { get; set; }
         }
     }
 }
