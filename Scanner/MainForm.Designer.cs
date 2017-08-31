@@ -40,11 +40,11 @@
             this.btn_Send = new System.Windows.Forms.Button();
             this.txt_UseEncoding = new System.Windows.Forms.TextBox();
             this.lbl_SendEncoding = new System.Windows.Forms.Label();
-            this.btn_SendStop = new System.Windows.Forms.Button();
             this.txt_portFrom = new System.Windows.Forms.TextBox();
             this.lbl_Spliter = new System.Windows.Forms.Label();
             this.txt_portEnd = new System.Windows.Forms.TextBox();
             this.btn_ReScan = new System.Windows.Forms.Button();
+            this.lbl_ReciveStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lbl_SannerInput
@@ -90,7 +90,6 @@
             this.lbl_ScannerPort.Size = new System.Drawing.Size(17, 20);
             this.lbl_ScannerPort.TabIndex = 4;
             this.lbl_ScannerPort.Text = "1";
-            
             // 
             // list_CanUsePortList
             // 
@@ -157,16 +156,6 @@
             this.lbl_SendEncoding.TabIndex = 11;
             this.lbl_SendEncoding.Text = "输入要使用的编码:";
             // 
-            // btn_SendStop
-            // 
-            this.btn_SendStop.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btn_SendStop.Location = new System.Drawing.Point(559, 401);
-            this.btn_SendStop.Name = "btn_SendStop";
-            this.btn_SendStop.Size = new System.Drawing.Size(75, 23);
-            this.btn_SendStop.TabIndex = 13;
-            this.btn_SendStop.Text = "停止发送";
-            this.btn_SendStop.UseVisualStyleBackColor = true;
-            // 
             // txt_portFrom
             // 
             this.txt_portFrom.Location = new System.Drawing.Point(473, 41);
@@ -174,7 +163,6 @@
             this.txt_portFrom.Size = new System.Drawing.Size(53, 21);
             this.txt_portFrom.TabIndex = 14;
             this.txt_portFrom.Text = "1";
-            this.txt_portFrom.LostFocus += OnValidatePortInput;
             // 
             // lbl_Spliter
             // 
@@ -192,7 +180,6 @@
             this.txt_portEnd.Size = new System.Drawing.Size(53, 21);
             this.txt_portEnd.TabIndex = 16;
             this.txt_portEnd.Text = "65535";
-            this.txt_portEnd.LostFocus += OnValidatePortInput;
             // 
             // btn_ReScan
             // 
@@ -206,17 +193,26 @@
             this.btn_ReScan.UseVisualStyleBackColor = false;
             this.btn_ReScan.Click += new System.EventHandler(this.btn_ReScan_Click);
             // 
+            // lbl_ReciveStatus
+            // 
+            this.lbl_ReciveStatus.AutoSize = true;
+            this.lbl_ReciveStatus.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl_ReciveStatus.Location = new System.Drawing.Point(574, 402);
+            this.lbl_ReciveStatus.Name = "lbl_ReciveStatus";
+            this.lbl_ReciveStatus.Size = new System.Drawing.Size(0, 20);
+            this.lbl_ReciveStatus.TabIndex = 18;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(789, 457);
+            this.ClientSize = new System.Drawing.Size(789, 456);
+            this.Controls.Add(this.lbl_ReciveStatus);
             this.Controls.Add(this.btn_ReScan);
             this.Controls.Add(this.txt_portEnd);
             this.Controls.Add(this.lbl_Spliter);
             this.Controls.Add(this.txt_portFrom);
-            this.Controls.Add(this.btn_SendStop);
             this.Controls.Add(this.lbl_SendEncoding);
             this.Controls.Add(this.txt_UseEncoding);
             this.Controls.Add(this.btn_Send);
@@ -252,11 +248,11 @@
         private System.Windows.Forms.Button btn_Send;
         private System.Windows.Forms.TextBox txt_UseEncoding;
         private System.Windows.Forms.Label lbl_SendEncoding;
-        private System.Windows.Forms.Button btn_SendStop;
         private System.Windows.Forms.TextBox txt_portFrom;
         private System.Windows.Forms.Label lbl_Spliter;
         private System.Windows.Forms.TextBox txt_portEnd;
         private System.Windows.Forms.Button btn_ReScan;
+        private System.Windows.Forms.Label lbl_ReciveStatus;
     }
 }
 
