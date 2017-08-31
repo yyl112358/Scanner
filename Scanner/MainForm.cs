@@ -21,6 +21,8 @@ namespace Scanner
         Scanner.BLL.Scanner scanner = new Scanner.BLL.Scanner();
         int m_StartPort = 1;
         int m_EndPort = 65535;
+        int selectPort = 0;
+        string UseEncoding = string.Empty;
         #endregion
 
         public MainForm()
@@ -35,7 +37,6 @@ namespace Scanner
             {
                 SetUIStatus(WorkStatus.Scan);
                 scanner.Domain = domain;
-                
                 scanner.Scanning();
             }
             else
@@ -113,13 +114,15 @@ namespace Scanner
         //发送数据按钮 
         private void btn_Send_Click(object sender, EventArgs e)
         {
-            if (list_CanUsePortList.SelectedItem != null)
-            {
-            }
-            else
+            if (list_CanUsePortList.SelectedItem == null)
             {
                 MessageBox.Show("请先选择要发送的端口号");
             }
+            if (string.IsNullOrWhiteSpace(txt_UseEncoding.Text))
+            {
+                MessageBox.Show("请输入使用的编码格式");
+            }
+
         }
         //重新扫描按钮
         private void btn_ReScan_Click(object sender, EventArgs e)
@@ -131,7 +134,18 @@ namespace Scanner
             pg_ScannerPg.Value = 0;
             lbl_ScannerPort.Text = string.Empty;
             lbl_SannerPercent.Text = "%";
+            selectPort = 0;
+            UseEncoding = string.Empty;
             SetUIStatus(WorkStatus.Init);
+        }
+
+        private void SelectPort(object sender, EventArgs e)
+        {
+            PortInfo selectInfo = list_CanUsePortList.SelectedItem as PortInfo;
+            if (selectInfo != null)
+            {
+                lbl_SelectPort.Text = selectInfo.Port.ToString();
+            }
         }
     }
 }

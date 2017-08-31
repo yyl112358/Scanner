@@ -100,6 +100,7 @@
             this.list_CanUsePortList.Name = "list_CanUsePortList";
             this.list_CanUsePortList.Size = new System.Drawing.Size(268, 292);
             this.list_CanUsePortList.TabIndex = 5;
+            this.list_CanUsePortList.SelectedIndexChanged += SelectPort;
             // 
             // richTxt_SendingInfo
             // 
@@ -146,6 +147,12 @@
             this.txt_UseEncoding.Name = "txt_UseEncoding";
             this.txt_UseEncoding.Size = new System.Drawing.Size(150, 21);
             this.txt_UseEncoding.TabIndex = 10;
+            //this.txt_UseEncoding.LostFocus += (o, e) => {
+            //    string InputEncoding = txt_UseEncoding.Text;
+            //    if (!string.IsNullOrWhiteSpace(InputEncoding))
+            //    {
+            //    }
+            //};
             // 
             // lbl_SendEncoding
             // 

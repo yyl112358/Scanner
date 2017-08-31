@@ -14,7 +14,7 @@ namespace Scanner.Model
         /// </summary>
         [ScanStatus(new string[]{ "pg_ScannerPg", "lbl_ScannerPort", "lbl_SannerPercent", "lbl_SannerInput" })]
         Scan,
-        [ScanCompleteStatus(new string[] { "btn_ensureSelectPort", "", "", "btn_Send" , "list_CanUsePortList", "txt_UseEncoding", "lbl_SannerInput", "btn_ReScan", "richTxt_SendingInfo" })]
+        [ScanCompleteStatus(new string[] { "btn_ensureSelectPort", "lbl_SelectPort", "", "btn_Send" , "list_CanUsePortList", "txt_UseEncoding", "lbl_SannerInput", "btn_ReScan", "richTxt_SendingInfo" })]
         ScanComplete,
         /// <summary>
         /// 程序刚被初始化状态（空闲状态）
