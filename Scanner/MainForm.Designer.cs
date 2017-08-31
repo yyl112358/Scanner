@@ -99,6 +99,7 @@
             this.list_CanUsePortList.Name = "list_CanUsePortList";
             this.list_CanUsePortList.Size = new System.Drawing.Size(268, 292);
             this.list_CanUsePortList.TabIndex = 5;
+            this.list_CanUsePortList.SelectedIndexChanged += ListSelectChange;
             // 
             // richTxt_SendingInfo
             // 
@@ -163,6 +164,7 @@
             this.txt_portFrom.Size = new System.Drawing.Size(53, 21);
             this.txt_portFrom.TabIndex = 14;
             this.txt_portFrom.Text = "1";
+            this.txt_portFrom.LostFocus += OnValidatePortInput;
             // 
             // lbl_Spliter
             // 
@@ -180,6 +182,7 @@
             this.txt_portEnd.Size = new System.Drawing.Size(53, 21);
             this.txt_portEnd.TabIndex = 16;
             this.txt_portEnd.Text = "65535";
+            this.txt_portEnd.LostFocus += OnValidatePortInput;
             // 
             // btn_ReScan
             // 

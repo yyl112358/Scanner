@@ -134,6 +134,7 @@ namespace Scanner
             sendHelper.IP = txtBox_ScannerInput.Text;
             sendHelper.Port = (list_CanUsePortList.SelectedItem as PortInfo).Port;
             sendHelper.TimeOut = 10;
+            lbl_ReciveStatus.Text = "正在接收数据....";
             sendHelper.AsyncGetResult(new Action<object>((o) =>
             {
                 byte[] result = o as byte[];
@@ -150,8 +151,7 @@ namespace Scanner
                     string resultMsg = Encoding.UTF8.GetString(result);
                     MessageBox.Show(resultMsg);
                 }
-            }), richTxt_SendingInfo.Text, out ReciveResult);
-            lbl_ReciveStatus.Text = "正在接收数据";
+            }), richTxt_SendingInfo.Text);
         }
         //重新扫描按钮
         private void btn_ReScan_Click(object sender, EventArgs e)

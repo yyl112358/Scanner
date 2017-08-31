@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
 
 namespace Scanner.BLL
 {
@@ -155,59 +156,59 @@ namespace Scanner.BLL
                      {
                          byte[] resultByte = null;
                          SockAndResult Info = new SockAndResult() { sock = sock, Result = null };
-                        #region 另起线程进行接收动作
-                        Thread reciveThread = new Thread((o) =>
-                         {
-                             SockAndResult param = o as SockAndResult;
-                             Socket s;
-                             if (o == null)
-                             {
-                                 return;
-                             }
-                             else
-                             {
-                                 s = param.sock;
-                             }
+                         #region 另起线程进行接收动作
+                         Thread reciveThread = new Thread((o) =>
+                          {
+                              SockAndResult param = o as SockAndResult;
+                              Socket s;
+                              if (o == null)
+                              {
+                                  return;
+                              }
+                              else
+                              {
+                                  s = param.sock;
+                              }
 
-                             using (MemoryStream ms = new MemoryStream())
-                             {
-                                 do
-                                 {
-                                     byte[] buff = new byte[512];
-                                     int reciveLength = 0;
-                                     reciveLength = s.Receive(buff, 0, 512, SocketFlags.None);
-                                     if (reciveLength > 0)
-                                     {
-                                         ms.Write(buff, 0, reciveLength);
-                                     }
-                                     if (reciveLength == 0)
-                                     {
-                                         break;
-                                     }
-                                     buff = new byte[512];
-                                 }
-                                //持续接收
-                                while (s.Available > 0);
-                                 byte[] reciveResult = new byte[ms.Length];
-                                 ms.Seek(0, SeekOrigin.Begin);
-                                 ms.Read(reciveResult, 0, (int)ms.Length);
-                                 param.Result = reciveResult;
-                             }
-                             if (socket.Connected)
-                             {
-                                 socket.Shutdown(SocketShutdown.Both);
-                                 socket.Close();
-                                 socket.Dispose();
-                             }
-                         });
+                              using (MemoryStream ms = new MemoryStream())
+                              {
+                                  do
+                                  {
+                                      byte[] buff = new byte[512];
+                                      int reciveLength = 0;
+                                      reciveLength = s.Receive(buff, 0, 512, SocketFlags.None);
+                                      if (reciveLength > 0)
+                                      {
+                                          ms.Write(buff, 0, reciveLength);
+                                      }
+                                      if (reciveLength == 0)
+                                      {
+                                          break;
+                                      }
+                                      buff = new byte[512];
+                                  }
+                                  //持续接收
+                                  while (s.Available > 0);
+                                  byte[] reciveResult = new byte[ms.Length];
+                                  ms.Seek(0, SeekOrigin.Begin);
+                                  ms.Read(reciveResult, 0, (int)ms.Length);
+                                  param.Result = reciveResult;
+                              }
+                              if (socket.Connected)
+                              {
+                                  socket.Shutdown(SocketShutdown.Both);
+                                  socket.Close();
+                                  socket.Dispose();
+                              }
+                          });
                          reciveThread.IsBackground = true;
                          reciveThread.Start(Info);
-                        #endregion
+                         #endregion
 
-                        TimeSpan ts = TimeSpan.FromSeconds(this.TimeOut);
+                         TimeSpan ts = TimeSpan.FromSeconds(this.TimeOut);
                          DateTime WaitTimeTo = DateTime.Now.Add(ts);
-                        //当前线程监视运行时间
-                        while (true)
+                         //当前线程监视运行时间
+                         while (true)
                          {
                              Thread.Sleep(TimeSpan.FromSeconds(1));
                              if (reciveThread.ThreadState == ThreadState.Stopped)
@@ -215,8 +216,8 @@ namespace Scanner.BLL
                                  resultByte = Info.Result;
                                  break;
                              }
-                            //超时
-                            else if (WaitTimeTo.CompareTo(DateTime.Now) < 0)
+                             //超时
+                             else if (WaitTimeTo.CompareTo(DateTime.Now) < 0)
                              {
                                  reciveThread.Abort();
                                  throw new Exception("接收超时");
@@ -250,14 +251,21 @@ namespace Scanner.BLL
         /// <param name="date">要发送的数据</param>
         /// <param name="result">结果</param>
         /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
-        public void AsyncGetResult(Action<object> callBack, string data, out byte[] result)
+        public void AsyncGetResult(Action<object> callBack, string data)
         {
             if (this.OnReciveComplete != null)
             {
                 OnReciveComplete = null;
             }
-            OnReciveComplete += callBack;
-            result = GetResult(data);
+            Func<string, byte[]> func = new Func<string, byte[]>(GetResult);
+            func.BeginInvoke(data, new AsyncCallback((isyncresult) =>
+            {
+                AsyncResult res = isyncresult as AsyncResult;
+                Func<string, byte[]> del = (Func<string, byte[]>)res.AsyncDelegate;
+                byte[] reciveResult = del.EndInvoke(isyncresult);
+                callBack(reciveResult);
+            }), new object());
+
         }
         /// <summary>
         /// 以异步调用的方式获取远程端口的返回值
@@ -266,14 +274,13 @@ namespace Scanner.BLL
         /// <param name="date">要发送的数据</param>
         /// <param name="result">结果</param>
         /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
-        public void AsyncGetResult(Action<object> callBack, byte[] data, out byte[] result)
+        public void AsyncGetResult(Action<object> callBack, byte[] data)
         {
             if (this.OnReciveComplete != null)
             {
                 OnReciveComplete = null;
             }
             OnReciveComplete += callBack;
-            result = GetResult(data);
         }
 
         /// <summary>
@@ -298,7 +305,7 @@ namespace Scanner.BLL
                 IsTransferNow = false;
             }
         }
-        
+
         /// <summary>
         /// 判断指定的编码类型名称在当前系统中是否可用
         /// </summary>
