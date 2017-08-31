@@ -21,6 +21,7 @@ namespace Scanner
         Scanner.BLL.Scanner scanner = new Scanner.BLL.Scanner();
         int m_StartPort = 1;
         int m_EndPort = 65535;
+        byte[] ReciveResult;
         #endregion
 
         public MainForm()
@@ -35,7 +36,7 @@ namespace Scanner
             {
                 SetUIStatus(WorkStatus.Scan);
                 scanner.Domain = domain;
-                
+
                 scanner.Scanning();
             }
             else
@@ -113,13 +114,44 @@ namespace Scanner
         //发送数据按钮 
         private void btn_Send_Click(object sender, EventArgs e)
         {
-            if (list_CanUsePortList.SelectedItem != null)
-            {
-            }
-            else
+            if (list_CanUsePortList.SelectedItem == null)
             {
                 MessageBox.Show("请先选择要发送的端口号");
+                return;
             }
+            if (string.IsNullOrWhiteSpace(txt_UseEncoding.Text))
+            {
+                MessageBox.Show("请输入要使用的发送数据的编码格式");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(richTxt_SendingInfo.Text))
+            {
+                MessageBox.Show("请输入要发送的数据");
+                return;
+            }
+            SendData sendHelper = new SendData();
+            sendHelper.Encoding = txt_UseEncoding.Text;
+            sendHelper.IP = txtBox_ScannerInput.Text;
+            sendHelper.Port = (list_CanUsePortList.SelectedItem as PortInfo).Port;
+            sendHelper.TimeOut = 10;
+            lbl_ReciveStatus.Text = "正在接收数据....";
+            sendHelper.AsyncGetResult(new Action<object>((o) =>
+            {
+                byte[] result = o as byte[];
+                if (result != null)
+                {
+                    if (lbl_ReciveStatus.InvokeRequired)
+                    {
+                        lbl_ReciveStatus.Invoke(new Action<object>((obj)=> { lbl_ReciveStatus.Text = "接收完成"; }));
+                    }
+                    else
+                    {
+                        lbl_ReciveStatus.Text = "接收完成 ";
+                    }
+                    string resultMsg = Encoding.UTF8.GetString(result);
+                    MessageBox.Show(resultMsg);
+                }
+            }), richTxt_SendingInfo.Text);
         }
         //重新扫描按钮
         private void btn_ReScan_Click(object sender, EventArgs e)
@@ -132,6 +164,28 @@ namespace Scanner
             lbl_ScannerPort.Text = string.Empty;
             lbl_SannerPercent.Text = "%";
             SetUIStatus(WorkStatus.Init);
+        }
+
+        private void ListSelectChange(object o, EventArgs e)
+        {
+            Model.PortInfo SelectInfo = list_CanUsePortList.SelectedItem as Model.PortInfo;
+            if (SelectInfo != null)
+            {
+                lbl_SelectPort.Text = SelectInfo.Port.ToString();
+            }
+        }
+        private void Txt_UseEncoding_LostFocus(object sender, System.EventArgs e)
+        {
+            string UserInput = txt_UseEncoding.Text;
+            if (!string.IsNullOrWhiteSpace(UserInput))
+            {
+                bool EncodeTestResult = SendData.IsCanUseEncode(UserInput);
+                if (!EncodeTestResult)
+                {
+                    MessageBox.Show("请输入系统支持的编码格式");
+                    txt_UseEncoding.Text = string.Empty;
+                }
+            }
         }
     }
 }
