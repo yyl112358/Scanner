@@ -142,7 +142,7 @@ namespace Scanner
                 {
                     if (lbl_ReciveStatus.InvokeRequired)
                     {
-                        lbl_ReciveStatus.Invoke(new Action<object>((obj)=> { lbl_ReciveStatus.Text = "接收完成"; }));
+                        lbl_ReciveStatus.Invoke(new Action<object>((obj)=> { lbl_ReciveStatus.Text = "接收完成"; }),result);
                     }
                     else
                     {

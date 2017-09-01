@@ -57,8 +57,7 @@ Accept-Language: zh-CN,zh;q=0.8
 ";
             byte[] result;
             int i = 5;
-            sd.AsyncGetResult(new Action<object>((o)=> { i = 20; }),SendStr,out result);
-            string resultStr = System.Text.Encoding.UTF8.GetString(result);
+            sd.AsyncGetResult(new Action<object>((o)=> { i = 20; }),SendStr);
         }
 
         [TestMethod]
