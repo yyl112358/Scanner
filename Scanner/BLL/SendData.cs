@@ -31,7 +31,7 @@ namespace Scanner.BLL
 
         bool IsTransferNow = false;
 
-        event Action<object> OnReciveComplete;
+        public event Action<int> OnTimeOut;
         #endregion
 
         #region  Property
@@ -89,7 +89,7 @@ namespace Scanner.BLL
             get { return m_TimeOut; }
             set
             {
-                if (m_TimeOut < 0 || m_TimeOut > 20)
+                if (value < 0 || value > 20)
                 {
                     throw new Exception("超时时间不在0-20之间");
                 }
@@ -220,17 +220,14 @@ namespace Scanner.BLL
                              else if (WaitTimeTo.CompareTo(DateTime.Now) < 0)
                              {
                                  reciveThread.Abort();
-                                 throw new Exception("接收超时");
+                                 OnTimeOut?.Invoke(TimeOut);
+                                 return null;
                              }
                          }
                          return resultByte;
                      });
                     byte[] invorkResult = del.Invoke(socket);
                     result = invorkResult;
-                    if (OnReciveComplete != null)
-                    {
-                        OnReciveComplete(invorkResult);
-                    }
                 }
                 else
                 {
@@ -253,10 +250,6 @@ namespace Scanner.BLL
         /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
         public void AsyncGetResult(Action<object> callBack, string data)
         {
-            if (this.OnReciveComplete != null)
-            {
-                OnReciveComplete = null;
-            }
             Func<string, byte[]> func = new Func<string, byte[]>(GetResult);
             func.BeginInvoke(data, new AsyncCallback((isyncresult) =>
             {
@@ -276,11 +269,13 @@ namespace Scanner.BLL
         /// <exception cref="Exception">上一个请求在TimeOut时间内还没有完成又重新调用了该方法</exception>
         public void AsyncGetResult(Action<object> callBack, byte[] data)
         {
-            if (this.OnReciveComplete != null)
-            {
-                OnReciveComplete = null;
-            }
-            OnReciveComplete += callBack;
+            Func<byte[], byte[]> func = new Func<byte[], byte[]>(GetResult);
+            func.BeginInvoke(data, new AsyncCallback((isyncresult)=> {
+                AsyncResult res = isyncresult as AsyncResult;
+                Func<byte[], byte[]> del = (Func<byte[], byte[]>)res.AsyncDelegate;
+                byte[] reciveResult =del.EndInvoke(isyncresult);
+                callBack(reciveResult);
+            }),new object());
         }
 
         /// <summary>

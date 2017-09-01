@@ -21,7 +21,6 @@ namespace Scanner
         Scanner.BLL.Scanner scanner = new Scanner.BLL.Scanner();
         int m_StartPort = 1;
         int m_EndPort = 65535;
-        byte[] ReciveResult;
         #endregion
 
         public MainForm()
@@ -35,9 +34,16 @@ namespace Scanner
             if (!string.IsNullOrEmpty(domain))
             {
                 SetUIStatus(WorkStatus.Scan);
-                scanner.Domain = domain;
-
-                scanner.Scanning();
+                try
+                {
+                    scanner.Domain = domain;
+                    scanner.Scanning();
+                }
+                catch (Exception exp)
+                {
+                    MessageBox.Show(exp.Message);
+                    SetUIStatus(WorkStatus.Init);
+                }
             }
             else
             {
@@ -135,6 +141,12 @@ namespace Scanner
             sendHelper.Port = (list_CanUsePortList.SelectedItem as PortInfo).Port;
             sendHelper.TimeOut = 10;
             lbl_ReciveStatus.Text = "正在接收数据....";
+            sendHelper.OnTimeOut += (i) =>
+            {
+                MessageBox.Show("接收超时了！！请检查您的输入和选用的编码是否有误");
+                lbl_ReciveStatus.Text = "接收超时了";
+            };
+
             sendHelper.AsyncGetResult(new Action<object>((o) =>
             {
                 byte[] result = o as byte[];
@@ -142,7 +154,7 @@ namespace Scanner
                 {
                     if (lbl_ReciveStatus.InvokeRequired)
                     {
-                        lbl_ReciveStatus.Invoke(new Action<object>((obj)=> { lbl_ReciveStatus.Text = "接收完成"; }),result);
+                        lbl_ReciveStatus.Invoke(new Action<object>((obj) => { lbl_ReciveStatus.Text = "接收完成"; }), result);
                     }
                     else
                     {
