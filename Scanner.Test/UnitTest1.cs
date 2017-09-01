@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Scanner;
 using Scanner.BLL;
+using System.Collections;
+using System.Collections.Generic;
 using Scanner.Model;
 
 namespace Scanner.Test
@@ -30,6 +32,8 @@ Accept-Language: zh-CN,zh;q=0.8
 ";
             byte[] result= sd.GetResult(SendStr);
             string resultStr = System.Text.Encoding.UTF8.GetString(result);
+            byte[] result2 = sd.GetResult(SendStr);
+            string resultStr2 = System.Text.Encoding.UTF8.GetString(result2);
         }
 
         [TestMethod]
@@ -55,6 +59,18 @@ Accept-Language: zh-CN,zh;q=0.8
             int i = 5;
             sd.AsyncGetResult(new Action<object>((o)=> { i = 20; }),SendStr,out result);
             string resultStr = System.Text.Encoding.UTF8.GetString(result);
+        }
+
+        [TestMethod]
+        public void TestEncodingStaticMethod()
+        {
+            string[] encodNames = new string[] {"UTF-8","test","Unicode","ASCII" };
+            List<bool> result = new List<bool>();
+            foreach (var name in encodNames)
+            {
+                bool testResult  =BLL.SendData.IsCanUseEncode(name);
+                result.Add(testResult);
+            }
         }
     }
 }
