@@ -146,6 +146,7 @@
             this.txt_UseEncoding.Name = "txt_UseEncoding";
             this.txt_UseEncoding.Size = new System.Drawing.Size(150, 21);
             this.txt_UseEncoding.TabIndex = 10;
+            this.txt_UseEncoding.LostFocus += Txt_UseEncoding_LostFocus;
             // 
             // lbl_SendEncoding
             // 
