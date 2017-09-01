@@ -36,7 +36,7 @@ namespace Scanner
             {
                 SetUIStatus(WorkStatus.Scan);
                 scanner.Domain = domain;
-
+                
                 scanner.Scanning();
             }
             else
@@ -163,29 +163,9 @@ namespace Scanner
             pg_ScannerPg.Value = 0;
             lbl_ScannerPort.Text = string.Empty;
             lbl_SannerPercent.Text = "%";
+            selectPort = 0;
+            UseEncoding = string.Empty;
             SetUIStatus(WorkStatus.Init);
-        }
-
-        private void ListSelectChange(object o, EventArgs e)
-        {
-            Model.PortInfo SelectInfo = list_CanUsePortList.SelectedItem as Model.PortInfo;
-            if (SelectInfo != null)
-            {
-                lbl_SelectPort.Text = SelectInfo.Port.ToString();
-            }
-        }
-        private void Txt_UseEncoding_LostFocus(object sender, System.EventArgs e)
-        {
-            string UserInput = txt_UseEncoding.Text;
-            if (!string.IsNullOrWhiteSpace(UserInput))
-            {
-                bool EncodeTestResult = SendData.IsCanUseEncode(UserInput);
-                if (!EncodeTestResult)
-                {
-                    MessageBox.Show("请输入系统支持的编码格式");
-                    txt_UseEncoding.Text = string.Empty;
-                }
-            }
         }
     }
 }
