@@ -52,7 +52,31 @@ namespace Scanner.BLL
         /// <summary>
         /// 程序要扫描的域
         /// </summary>
-        public string Domain { get { return m_Domain; } set { m_Domain = value; } }
+        public string Domain
+        {
+            get { return m_Domain; }
+            set
+            {
+                IPAddress outer;
+                bool parseResult = IPAddress.TryParse(value,out outer);
+                if (parseResult)
+                {
+                    m_Domain = value;
+                }
+                else
+                {
+                    IPAddress[] DnsAnalysis;
+                    try
+                    {
+                        DnsAnalysis = Dns.GetHostAddresses(value);
+                    }
+                    catch (SocketException e)
+                    {
+                        throw new Exception("设置的IP地址或域名错误");
+                    }
+                }
+            }
+        }
         /// <summary>
         /// 扫描的开始端口
         /// </summary>
