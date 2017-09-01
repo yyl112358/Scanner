@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.Threading;
 using System.IO;
@@ -111,7 +110,7 @@ namespace Scanner.BLL
         public byte[] GetResult(string data)
         {
             byte[] result = null;
-            if (string.IsNullOrWhiteSpace(data))
+            if (string.IsNullOrEmpty(data))
             {
                 throw new Exception("请传入正确的要发送的字符信息");
             }
@@ -198,7 +197,7 @@ namespace Scanner.BLL
                               {
                                   socket.Shutdown(SocketShutdown.Both);
                                   socket.Close();
-                                  socket.Dispose();
+                                  //socket.Dispose();
                               }
                           });
                          reciveThread.IsBackground = true;

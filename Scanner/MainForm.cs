@@ -6,7 +6,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Scanner.Model;
 using Scanner.BLL;
@@ -125,12 +124,12 @@ namespace Scanner
                 MessageBox.Show("请先选择要发送的端口号");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(txt_UseEncoding.Text))
+            if (string.IsNullOrEmpty(txt_UseEncoding.Text))
             {
                 MessageBox.Show("请输入要使用的发送数据的编码格式");
                 return;
             }
-            if (string.IsNullOrWhiteSpace(richTxt_SendingInfo.Text))
+            if (string.IsNullOrEmpty(richTxt_SendingInfo.Text))
             {
                 MessageBox.Show("请输入要发送的数据");
                 return;
@@ -189,7 +188,7 @@ namespace Scanner
         private void Txt_UseEncoding_LostFocus(object sender, System.EventArgs e)
         {
             string UserInput = txt_UseEncoding.Text;
-            if (!string.IsNullOrWhiteSpace(UserInput))
+            if (!string.IsNullOrEmpty(UserInput))
             {
                 bool EncodeTestResult = SendData.IsCanUseEncode(UserInput);
                 if (!EncodeTestResult)
