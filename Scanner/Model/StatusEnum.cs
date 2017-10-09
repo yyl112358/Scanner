@@ -19,7 +19,7 @@ namespace Scanner.Model
         /// <summary>
         /// 程序刚被初始化状态（空闲状态）
         /// </summary>
-        [InitStatus(new string[] { "txtBox_ScannerInput", "btn_StartScan", "lbl_SannerInput", "txt_portFrom", "txt_portEnd" })]
+        [InitStatus(new string[] { "txtBox_ScannerInput", "btn_StartScan", "lbl_SannerInput", "txt_portFrom", "txt_portEnd" , "txtBox_MaxThreadPool" , "lbl_MaxThread" })]
         Init,
         /// <summary>
         /// 向远程端口发送数据状态

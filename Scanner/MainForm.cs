@@ -31,6 +31,7 @@ namespace Scanner
         private void btn_StartScan_Click(object sender, EventArgs e)
         {
             string domain = txtBox_ScannerInput.Text;
+            SetMaxThread();
             if (!string.IsNullOrEmpty(domain))
             {
                 SetUIStatus(WorkStatus.Scan);
@@ -197,6 +198,19 @@ namespace Scanner
                     MessageBox.Show("请输入系统支持的编码格式");
                     txt_UseEncoding.Text = string.Empty;
                 }
+            }
+        }
+        private void SetMaxThread()
+        {
+            int maxThread = 0;
+            bool parseResult = int.TryParse(txtBox_MaxThreadPool.Text, out maxThread);
+            if (parseResult)
+            {
+                System.Threading.ThreadPool.SetMaxThreads(maxThread, maxThread);
+            }
+            else
+            {
+                MessageBox.Show("最大线程数量设置转换异常");
             }
         }
     }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lbl_SannerInput = new System.Windows.Forms.Label();
             this.txtBox_ScannerInput = new System.Windows.Forms.TextBox();
             this.pg_ScannerPg = new System.Windows.Forms.ProgressBar();
@@ -45,6 +46,9 @@
             this.txt_portEnd = new System.Windows.Forms.TextBox();
             this.btn_ReScan = new System.Windows.Forms.Button();
             this.lbl_ReciveStatus = new System.Windows.Forms.Label();
+            this.txtBox_MaxThreadPool = new System.Windows.Forms.TextBox();
+            this.lbl_MaxThread = new System.Windows.Forms.Label();
+            this.toolTip_MaxThread = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // lbl_SannerInput
@@ -68,7 +72,7 @@
             // 
             this.pg_ScannerPg.Location = new System.Drawing.Point(43, 100);
             this.pg_ScannerPg.Name = "pg_ScannerPg";
-            this.pg_ScannerPg.Size = new System.Drawing.Size(484, 23);
+            this.pg_ScannerPg.Size = new System.Drawing.Size(411, 23);
             this.pg_ScannerPg.TabIndex = 2;
             // 
             // lbl_SannerPercent
@@ -99,7 +103,6 @@
             this.list_CanUsePortList.Name = "list_CanUsePortList";
             this.list_CanUsePortList.Size = new System.Drawing.Size(268, 292);
             this.list_CanUsePortList.TabIndex = 5;
-            this.list_CanUsePortList.SelectedIndexChanged += ListSelectChange;
             // 
             // richTxt_SendingInfo
             // 
@@ -146,7 +149,6 @@
             this.txt_UseEncoding.Name = "txt_UseEncoding";
             this.txt_UseEncoding.Size = new System.Drawing.Size(150, 21);
             this.txt_UseEncoding.TabIndex = 10;
-            this.txt_UseEncoding.LostFocus += Txt_UseEncoding_LostFocus;
             // 
             // lbl_SendEncoding
             // 
@@ -165,7 +167,6 @@
             this.txt_portFrom.Size = new System.Drawing.Size(53, 21);
             this.txt_portFrom.TabIndex = 14;
             this.txt_portFrom.Text = "1";
-            this.txt_portFrom.LostFocus += OnValidatePortInput;
             // 
             // lbl_Spliter
             // 
@@ -183,7 +184,6 @@
             this.txt_portEnd.Size = new System.Drawing.Size(53, 21);
             this.txt_portEnd.TabIndex = 16;
             this.txt_portEnd.Text = "65535";
-            this.txt_portEnd.LostFocus += OnValidatePortInput;
             // 
             // btn_ReScan
             // 
@@ -206,12 +206,41 @@
             this.lbl_ReciveStatus.Size = new System.Drawing.Size(0, 20);
             this.lbl_ReciveStatus.TabIndex = 18;
             // 
+            // txtBox_MaxThreadPool
+            // 
+            this.txtBox_MaxThreadPool.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtBox_MaxThreadPool.Location = new System.Drawing.Point(543, 102);
+            this.txtBox_MaxThreadPool.Name = "txtBox_MaxThreadPool";
+            this.txtBox_MaxThreadPool.Size = new System.Drawing.Size(64, 23);
+            this.txtBox_MaxThreadPool.TabIndex = 19;
+            this.txtBox_MaxThreadPool.Text = "20";
+            this.toolTip_MaxThread.SetToolTip(this.txtBox_MaxThreadPool, "最大线程数应介于20-150之间");
+            // 
+            // lbl_MaxThread
+            // 
+            this.lbl_MaxThread.AutoSize = true;
+            this.lbl_MaxThread.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl_MaxThread.Location = new System.Drawing.Point(458, 101);
+            this.lbl_MaxThread.Name = "lbl_MaxThread";
+            this.lbl_MaxThread.Size = new System.Drawing.Size(79, 20);
+            this.lbl_MaxThread.TabIndex = 20;
+            this.lbl_MaxThread.Text = "最大线程数";
+            // 
+            // toolTip_MaxThread
+            // 
+            this.toolTip_MaxThread.AutoPopDelay = 5000;
+            this.toolTip_MaxThread.InitialDelay = 200;
+            this.toolTip_MaxThread.ReshowDelay = 100;
+            this.toolTip_MaxThread.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(789, 456);
+            this.ClientSize = new System.Drawing.Size(789, 457);
+            this.Controls.Add(this.lbl_MaxThread);
+            this.Controls.Add(this.txtBox_MaxThreadPool);
             this.Controls.Add(this.lbl_ReciveStatus);
             this.Controls.Add(this.btn_ReScan);
             this.Controls.Add(this.txt_portEnd);
@@ -257,6 +286,9 @@
         private System.Windows.Forms.TextBox txt_portEnd;
         private System.Windows.Forms.Button btn_ReScan;
         private System.Windows.Forms.Label lbl_ReciveStatus;
+        private System.Windows.Forms.TextBox txtBox_MaxThreadPool;
+        private System.Windows.Forms.Label lbl_MaxThread;
+        private System.Windows.Forms.ToolTip toolTip_MaxThread;
     }
 }
 

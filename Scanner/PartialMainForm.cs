@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Scanner
 {
-     partial class MainForm
+    partial class MainForm
     {
         /// <summary>
         /// 初始化方法
@@ -33,6 +33,57 @@ namespace Scanner
                 else
                 {
                     list_CanUsePortList.Items.Add(portInfo);
+                }
+            };
+
+            txtBox_MaxThreadPool.LostFocus += (o, e) =>
+            {
+                TextBox t = o as TextBox;
+                bool parseResult = false;
+                int maxThread;
+                parseResult = int.TryParse(t.Text, out maxThread);
+                if (parseResult)
+                {
+                    if (maxThread >= 20 && maxThread <= 150)
+                    {
+                        t.Text = maxThread.ToString();
+                    }
+                    else
+                    {
+                        t.Text = "20";
+                    }
+                }
+                else
+                {
+                    t.Text = "20";
+                }
+            };
+
+            txt_portFrom.LostFocus += (o, e) =>
+            {
+                try
+                {
+                    OnValidatePortInput(o, e);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    TextBox t = o as TextBox;
+                    t.Focus();
+                }
+            };
+
+            txt_portEnd.LostFocus += (o, e) =>
+            {
+                try
+                {
+                    OnValidatePortInput(o, e);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    TextBox t = o as TextBox;
+                    t.Focus();
                 }
             };
             SetUIStatus(WorkStatus.Init);
